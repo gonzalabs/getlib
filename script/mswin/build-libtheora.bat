@@ -1,14 +1,6 @@
 
 set project=libtheora_static
-
-if %variant%==release (
-	set configure_libstr=%configure_str%_SSE2
-) else (
-	set configure_libstr=%configure_str%
-)
-
-set config="%configure_libstr%|%platform_str%"
-
+set config=%defbuildcfg%
 
 if "%toolset%"=="msvc-8.0" (
 	set keydir=VS2005
@@ -30,7 +22,7 @@ goto %command%
 :rebuild
 	:: lib
 	echo . copy lib files:
-	copy win32\%keydir%\%platform_str%\%configure_libstr%\libtheora_static.lib "%target-lib%"
+	copy win32\%keydir%\%platform_str%\%configure_str%\libtheora_static.lib "%target-lib%"
 	
 	:: include
 	echo . copy include files:
