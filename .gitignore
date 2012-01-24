@@ -1,0 +1,29 @@
+$ cat .gitignore
+
+##
+##  OS generated files
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+
+##
+##  IDE temporary files
+*.ncb
+*.idb
+*.pdb
+*.suo
+*.user
+
+##
+##  gsl structure
+build/
+libs/
+logs/
+
+##
+##  gsl config and log files
+*.cfg
+!*-enduser.cfg
+*.log
+*.log.html

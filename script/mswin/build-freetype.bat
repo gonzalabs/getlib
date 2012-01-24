@@ -19,7 +19,7 @@ if "%toolset%"=="msvc-8.0" (
 set solution=builds\win32\%keydir%\freetype.sln
 
 echo . solution='%solution%' project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%"
+%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
 goto %command%
 
 :build

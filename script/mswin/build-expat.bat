@@ -13,7 +13,7 @@ if "%toolset%"=="msvc-8.0" (
 )
 
 echo . solution='%solution%' project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%"
+%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
 goto %command%
 
 :build

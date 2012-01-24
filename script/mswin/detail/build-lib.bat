@@ -24,6 +24,7 @@ if "%3"=="" (
 cd %~dp0..
 set script=%cd%\build-%libname%.bat
 set libdst=%target%\build-%libname%.bat
+set liblog=%logdir%\%libname%-%libver%.log
 
 echo ........................................................................
 echo . LIBRARY %libname%-%libver%

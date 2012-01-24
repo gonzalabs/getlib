@@ -17,6 +17,7 @@
 ::
 ::    source        - libraries root directory 
 ::    output        - build output directory 
+::    logout        - build logs output directory
 ::
 
 
@@ -52,9 +53,17 @@ if /i "%toolset%" EQU "msvc-9.0" (
 )
 
 pushd %comntools%
-cd ..\..\VC
-set commandprompt="%CD%\vcvarsall.bat"
+	cd ..\..\VC
+	set commandprompt="%CD%\vcvarsall.bat"
 popd
+
+if /I %comntools%=="%VSINSTALLDIR%\Common7\Tools\" (
+	set commandprompt_alreadysetup=yes
+) else if /I %comntools%=="%VSINSTALLDIR%Common7\Tools\" (
+	set commandprompt_alreadysetup=yes
+) else (
+	set commandprompt_alreadysetup=no
+)
 
 if "%msvc-express%"=="yes" (
 	set compiler=VCExpress.exe
@@ -101,11 +110,14 @@ if NOT defined output (
 	goto :error
 )
 
+if NOT defined logout (
+	set logout=%~dp0\..\..\logs
+	echo WARNING: variable logout [log output dir] is not specified, default value %logout% will be used
+)
+
 
 :: convenience variables
-set buildcfg_0="%configure_str%|%platform_str%"
-set buildcfg_1=%platform_str%_%configure_str%
-set defbuildcfg=%buildcfg_0%
+set defbuildcfg="%configure_str%|%platform_str%"
 
 set buildlib=%~dp0\detail\build-lib.bat
 
@@ -150,10 +162,29 @@ echo ........................................................................
 	set target-lib=%target%\lib
 	if NOT exist "%target-lib%" mkdir %target-lib%
 	
-	:: start command prompt
-	echo . start command prompt at:
-	echo .     %commandprompt%
-	call %commandprompt% %platform_xZZ%
+	set logdir=%logout%\%toolset%-x%address-model%-%variant%
+	if NOT exist "%logdir%" (
+		mkdir %logdir% 
+	) else (
+		del /Q %logdir%\*
+	)
+	
+:: start command prompt
+	if %commandprompt_alreadysetup%==yes (
+		echo . required command prompt has been ALREADY SETUP via:
+		echo .     %commandprompt%
+		echo . if an issue occure start the build procedure over in a clear environment!
+	) else (
+		echo . setting up command prompt via:
+		echo .     %commandprompt%
+		call %commandprompt% %platform_xZZ%
+	)
+	
+:: update evnironment, allows dependant libraries finding their dependencies (requires a switch /useenv)
+	set SAVE_INCLUDE=%INCLUDE%
+	set INCLUDE=%target-include%;%INCLUDE%
+	set SAVE_LIB=%LIB%
+	set LIB=%target-lib%;%LIB%
 
 :: build libraries
 	::call "%buildlib%" bzip2 1.0.6
@@ -161,6 +192,10 @@ echo ........................................................................
 	call "%buildlib%" freetype 2.4.8
 	call "%buildlib%" zlib 1.2.5
 
+:: restore evnironment
+	set INCLUDE=%SAVE_INCLUDE%
+	set LIB=%SAVE_LIB%
+	
 echo ........................................................................
 echo .
 echo .

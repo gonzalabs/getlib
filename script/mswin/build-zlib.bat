@@ -16,7 +16,7 @@ else if "%toolset%"=="msvc-9.0" (
 set solution=contrib\vstudio\%keydir%\zlibvc.sln
 
 echo . solution='%solution%' project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%"
+%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
 goto %command%
 
 :build
