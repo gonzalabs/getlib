@@ -187,10 +187,13 @@ echo ........................................................................
 	set LIB=%target-lib%;%LIB%
 
 :: build libraries
-	::call "%buildlib%" bzip2 1.0.6
-	call "%buildlib%" expat 2.0.1
-	call "%buildlib%" freetype 2.4.8
-	call "%buildlib%" zlib 1.2.5
+	::call "%buildlib%" cfg library-name library-version [library-directory]
+	:: cfg could be [dll, lib, all or off]
+	
+	::call "%buildlib%" lib bzip2 1.0.6
+	call "%buildlib%" lib expat 2.0.1
+	call "%buildlib%" lib freetype 2.4.8
+	call "%buildlib%" lib zlib 1.2.5
 
 :: restore evnironment
 	set INCLUDE=%SAVE_INCLUDE%

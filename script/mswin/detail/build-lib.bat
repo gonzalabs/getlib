@@ -2,23 +2,29 @@
 
 :: validating parameters
 if "%1"=="" (
+	echo ERROR: library config is not specified [dll, lib or all]!
+	goto :error
+) else (
+	set libcfg=%1
+)
+if "%2"=="" (
 	echo ERROR: library name is not specified!
 	goto :error
 ) else (
-	set libname=%1
-)
-
-if "%2"=="" (
-	echo ERROR: library version is not specified!
-	goto :error
-) else (
-	set libver=%2
+	set libname=%2
 )
 
 if "%3"=="" (
+	echo ERROR: library version is not specified!
+	goto :error
+) else (
+	set libver=%3
+)
+
+if "%4"=="" (
 	set libdir=%libname%-%libver%
 ) else (
-	set libdir=%3
+	set libdir=%4
 )
 
 cd %~dp0..
@@ -26,25 +32,54 @@ set script=%cd%\build-%libname%.bat
 set libdst=%target%\build-%libname%.bat
 set liblog=%logdir%\%libname%-%libver%.log
 
+if %libcfg%=="all" (
+	set libcfg-dll=yes
+	set libcfg-lib=yes
+) else if %libcfg%=="dll" (
+	set libcfg-dll=yes
+	set libcfg-lib=no
+) else if %libcfg%=="lib" (
+	set libcfg-dll=no
+	set libcfg-lib=yes
+) else if %libcfg%=="off" (
+	set libcfg-dll=no
+	set libcfg-lib=no
+	goto :end
+) else (
+	echo ERROR: unknonw primary library configuration was specified: %libcfg%
+	echo.       available options are: dll, lib, all or off
+	goto :error
+)
+
+
 echo ........................................................................
 echo . LIBRARY %libname%-%libver%
 echo ...... at %libdir%
-echo .
+echo.
 
 	if NOT exist "%script%" (
-		echo . ERROR: library build script not found %script%
+		echo.  ERROR: library build script not found %script%
 		goto :error2
 	)
 	
 	cd "%source%"
 	if NOT exist "%libdir%" (
-		echo . ERROR: library dir not found at %cd%\%libdir%
+		echo.  ERROR: library dir not found at %cd%\%libdir%
 		goto :error2
 	)
-	cd "%libdir%"
 	
-	echo . launching library build script...
-	call "%script%"
+	if %libcfg-dll%=="yes" (
+		cd "%libdir%"
+		echo.  launching library build script, DLL-config...
+		call "%script%"
+	)
+	
+	if %libcfg-lib%=="yes" (
+		cd "%libdir%"
+		echo.  launching library build script, LIB-config...
+		call "%script%"
+	)
+	
 
 echo ........................................................................
 echo . LIBRARY %libname%-%libver% - BUILD COMPLETE!

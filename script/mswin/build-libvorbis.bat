@@ -1,14 +1,6 @@
 
 set project=libvorbis_static
-
-if %variant%==release (
-	set configure_libstr=%configure_str%_SSE2
-) else (
-	set configure_libstr=%configure_str%
-)
-
-set config="%configure_libstr%|%platform_str%"
-
+set config=%defbuildcfg%
 
 if "%toolset%"=="msvc-8.0" (
 	set keydir=VS2005
@@ -20,7 +12,7 @@ if "%toolset%"=="msvc-8.0" (
 	set keydir=VS2012
 )
 
-set solution=win32\%keydir%\libvorbis_static.sln
+set solution=win32\%keydir%\vorbis_static.sln
 
 echo . solution='%solution%' project='%project%' config=%config%
 %compiler% %solution% /%command% %config% /project "%project%" /out %liblog% /useenv 
@@ -30,7 +22,7 @@ goto %command%
 :rebuild
 	:: lib
 	echo . copy lib files:
-	copy win32\%keydir%\%platform_str%\%configure_libstr%\libvorbis_static.lib "%target-lib%"
+	copy win32\%keydir%\%platform_str%\%configure_str%\libvorbis_static.lib "%target-lib%"
 	
 	:: include
 	echo . copy include files:
