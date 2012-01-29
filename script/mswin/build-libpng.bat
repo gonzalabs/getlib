@@ -29,8 +29,10 @@ goto %command%
 	
 	:: include
 	echo.  copy include files:
-	copy pngconf.h "%outdir-include%\"
 	copy png.h "%outdir-include%\"
+	copy pngconf.h "%outdir-include%\"
+	copy pnglibconf.h "%outdir-include%\"
+	
 	goto end
 
 :clean

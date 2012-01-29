@@ -31,6 +31,7 @@ goto %command%
 	echo.  copy include files:
 	copy jconfig.h "%outdir-include%\"
 	copy jpeglib.h "%outdir-include%\"
+	copy jmorecfg.h "%outdir-include%\"
 	goto end
 
 :clean
