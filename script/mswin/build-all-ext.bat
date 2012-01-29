@@ -1,0 +1,3 @@
+::
+:: external build configuration step
+::
