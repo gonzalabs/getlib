@@ -29,19 +29,18 @@ if "%4"=="" (
 
 cd %~dp0..
 set script=%cd%\build-%libname%.bat
-set libdst=%target%\build-%libname%.bat
 set liblog=%logdir%\%libname%-%libver%.log
 
-if %libcfg%=="all" (
+if %libcfg%==all (
 	set libcfg-dll=yes
 	set libcfg-lib=yes
-) else if %libcfg%=="dll" (
+) else if %libcfg%==dll (
 	set libcfg-dll=yes
 	set libcfg-lib=no
-) else if %libcfg%=="lib" (
+) else if %libcfg%==lib (
 	set libcfg-dll=no
 	set libcfg-lib=yes
-) else if %libcfg%=="off" (
+) else if %libcfg%==off (
 	set libcfg-dll=no
 	set libcfg-lib=no
 	goto :end
@@ -52,36 +51,62 @@ if %libcfg%=="all" (
 )
 
 
-echo ........................................................................
+echo ............................................................................
 echo . LIBRARY %libname%-%libver%
 echo ...... at %libdir%
-echo.
 
 	if NOT exist "%script%" (
+		echo.
 		echo.  ERROR: library build script not found %script%
 		goto :error2
 	)
 	
 	cd "%source%"
 	if NOT exist "%libdir%" (
+		echo.
 		echo.  ERROR: library dir not found at %cd%\%libdir%
 		goto :error2
 	)
-	
-	if %libcfg-dll%=="yes" (
+
+	if %libcfg-dll%==yes (
+		echo LIBRARY: %libname%-%libver% BUILD AS: dll>>%liblog%
+		date /T >>%liblog%
+		echo -------------------------------------------------------------------------------->>%liblog%
+		echo.   >>%liblog%
+		
+		set libcfg=dll
+		cd "%source%"
 		cd "%libdir%"
+		echo.
 		echo.  launching library build script, DLL-config...
 		call "%script%"
+		
+		echo.   >>%liblog%
+		echo.   >>%liblog%
+		echo.   >>%liblog%
+		echo.   >>%liblog%
 	)
 	
-	if %libcfg-lib%=="yes" (
+	if %libcfg-lib%==yes (
+		echo LIBRARY: %libname%-%libver% BUILD AS: lib>>%liblog%
+		date /T >>%liblog%
+		echo -------------------------------------------------------------------------------->>%liblog%
+		echo.   >>%liblog%
+		
+		set libcfg=lib
+		cd "%source%"
 		cd "%libdir%"
+		echo.
 		echo.  launching library build script, LIB-config...
 		call "%script%"
+		
+		echo.   >>%liblog%
+		echo.   >>%liblog%
+		echo.   >>%liblog%
+		echo.   >>%liblog%
 	)
 	
-
-echo ........................................................................
+echo ............................................................................
 echo . LIBRARY %libname%-%libver% - BUILD COMPLETE!
 
 goto :end

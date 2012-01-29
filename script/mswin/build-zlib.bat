@@ -1,43 +1,49 @@
 
-set project=zlibstat
-:: set project=zlibvc <- for dll
-set config=%defbuildcfg%
-
-if "%toolset%"=="msvc-8.0" (
-	set keydir=vc8
-else if "%toolset%"=="msvc-9.0" (
-	set keydir=vc9
-) else if "%toolset%"=="msvc-10.0" (
-	set keydir=vc10
-)  else if "%toolset%"=="msvc-11.0" (
-	set keydir=vc11
+if %libcfg%==dll (
+	set target=zlib1.dll
+	set dllfile=zlib1
+	set libfile=zdll
+) else if %libcfg%==lib (
+	set target=zlib.lib
+	set dllfile=
+	set libfile=zlib
+) else (
+	echo.  WARNING: no rule to build a library "%libname%" for the target "%libcfg%" - skip
+	goto end
 )
 
-set solution=contrib\vstudio\%keydir%\zlibvc.sln
-
-echo . solution='%solution%' project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
 goto %command%
 
 :build
 :rebuild
+	if not exist .\Makefile copy .\scripts\makefile.vcwin32 Makefile
+
+	echo.  perform clean...
+	nmake -f win32/Makefile.msc clean>>"%liblog%" 2>&1
+	
+	echo.  perform make...
+	if %address-model%==32 (
+		nmake -f win32/Makefile.msc LOC="-DASMV -DASMINF" OBJA="inffas32.obj match686.obj" %target%>>"%liblog%" 2>&1
+	) else (
+		nmake -f win32/Makefile.msc AS=ml64 LOC="-DASMV -DASMINF" OBJA="inffasx64.obj gvmat64.obj inffas8664.c" %target%>>"%liblog%" 2>&1
+	)
+	
 	:: bin
-	::echo . copy bin files:
-	::copy contrib\vstudio\%keydir%\%platform_xZZ%\ZlibDll%variant%\zlibwapi.dll "%target-bin%"
+	if %libcfg%==dll copy %dllfile%.dll "%outdir-bin%\"
 	
 	:: lib
-	echo . copy lib files:
-	::copy contrib\vstudio\%keydir%\%platform_xZZ%\ZlibStat%variant%\zlibwapi.lib "%target-lib%"
-	copy contrib\vstudio\%keydir%\%platform_xZZ%\ZlibStat%variant%\zlibstat.lib "%target-lib%"
+	echo.  copy lib files:
+	copy %libfile%.lib "%outdir-lib%\"
 	
 	:: include
-	echo . copy include files:
-	copy zconf.h "%target-include%"
-	copy zlib.h "%target-include%"
-	
+	echo.  copy include files:
+	copy zconf.h "%outdir-include%\"
+	copy zlib.h "%outdir-include%\"
 	goto end
 
 :clean
-	goto end
+	echo.  perform clean...
+	if exist .\Makefile nmake -f win32/Makefile.msc clean>>"%liblog%" 2>&1
 
 :end
+

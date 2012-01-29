@@ -34,6 +34,7 @@ goto %command%
 	goto end
 
 :clean
-	goto end
+	echo.  perform clean...
+	if exist .\Makefile nmake clean>>"%liblog%" 2>&1
 
 :end

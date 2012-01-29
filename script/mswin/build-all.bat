@@ -2,7 +2,9 @@
 :: MS Windows libraries builder
 :: parameters mimic those of boost jam
 ::
-::    %1            - build command [build, clean]
+::    %1            - build command
+::                    [build, clean]
+::                    command "build" actually performs "rebuild"
 ::
 ::    variant       - Build variant
 ::                    [debug,release]
@@ -41,7 +43,10 @@ if NOT defined toolset (
 	echo ERROR: variable toolset [c++ compiler] is not specified. Use msvc-8.0, msvc-10.0 or alike
 	goto :error
 )
-if /i "%toolset%" EQU "msvc-9.0" ( 
+
+if /i "%toolset%" EQU "msvc-8.0" ( 
+	set comntools="%VS80COMNTOOLS%"
+) else if /i "%toolset%" EQU "msvc-9.0" ( 
 	set comntools="%VS90COMNTOOLS%"
 ) else if /i "%toolset%" EQU "msvc-10.0" ( 
 	set comntools="%VS100COMNTOOLS%"
@@ -118,14 +123,13 @@ if NOT defined logout (
 
 :: convenience variables
 set defbuildcfg="%configure_str%|%platform_str%"
-
 set buildlib=%~dp0\detail\build-lib.bat
 
 
 :: echo configuration
-echo .
-echo .
-echo :::: GETLIB BUILD CONFIG :::::::::::::::::::::::::::::::::::::::::::::::
+echo.
+echo.
+echo :::: GETLIB BUILD CONFIG :::::::::::::::::::::::::::::::::::::::::::::::::::
 echo .         toolset: %toolset%
 echo .   address-model: %address-model%-bit
 echo .         variant: %variant%
@@ -133,7 +137,7 @@ echo .         command: %command%
 echo .
 echo .      source dir: %source%
 echo .      output dir: %output%
-echo ........................................................................
+echo ............................................................................
 
 :: prepare environment
 	if NOT exist %source% (
@@ -141,26 +145,26 @@ echo ........................................................................
 		goto :error
 	)
 
-	set target=%output%\%toolset%\x%address-model%-%variant%
-	if exist "%target%" (
+	set outdir=%output%\%toolset%\x%address-model%-%variant%
+	if exist "%outdir%" (
 		if "%clean-output%"=="yes" (
-			echo . clean output demanded, recreating target directory:
-			echo .     %target%
-			rmdir /Q /S %target%
-			mkdir %target%
+			echo . Clean output demanded, recreating output directory:
+			echo .     %outdir%
+			rmdir /Q /S %outdir%
+			mkdir %outdir%
 		)
 	) else (
-		echo . creating target directory:
-		echo .     %target%...
-		mkdir %target%
+		echo . Creating output directory:
+		echo .     %outdir%...
+		mkdir %outdir%
 	)
 	
-	set target-bin=%target%\bin
-	if NOT exist "%target-bin%" mkdir %target-bin%
-	set target-include=%target%\include
-	if NOT exist "%target-include%" mkdir %target-include%
-	set target-lib=%target%\lib
-	if NOT exist "%target-lib%" mkdir %target-lib%
+	set outdir-bin=%outdir%\bin
+	if NOT exist "%outdir-bin%" mkdir %outdir-bin%
+	set outdir-include=%outdir%\include
+	if NOT exist "%outdir-include%" mkdir %outdir-include%
+	set outdir-lib=%outdir%\lib
+	if NOT exist "%outdir-lib%" mkdir %outdir-lib%
 	
 	set logdir=%logout%\%toolset%-x%address-model%-%variant%
 	if NOT exist "%logdir%" (
@@ -169,39 +173,48 @@ echo ........................................................................
 		del /Q %logdir%\*
 	)
 	
+:: extra configurations
+	call "%~dp0\build-all-ext.bat"
+	
 :: start command prompt
 	if %commandprompt_alreadysetup%==yes (
-		echo . required command prompt has been ALREADY SETUP via:
+		echo . Required command prompt has been ALREADY SETUP via:
 		echo .     %commandprompt%
-		echo . if an issue occure start the build procedure over in a clear environment!
+		echo . If an issue occure start the build procedure over in a clear environment!
 	) else (
-		echo . setting up command prompt via:
+		echo . Setting up command prompt via:
 		echo .     %commandprompt%
 		call %commandprompt% %platform_xZZ%
 	)
 	
-:: update evnironment, allows dependant libraries finding their dependencies (requires a switch /useenv)
+:: update paths
 	set SAVE_INCLUDE=%INCLUDE%
-	set INCLUDE=%target-include%;%INCLUDE%
+	set INCLUDE=%outdir-include%;%INCLUDE%
 	set SAVE_LIB=%LIB%
-	set LIB=%target-lib%;%LIB%
+	set LIB=%outdir-lib%;%LIB%
 
 :: build libraries
-	::call "%buildlib%" cfg library-name library-version [library-directory]
-	:: cfg could be [dll, lib, all or off]
+	::call "%buildlib%" CFG library-name library-version [library-directory]
+	:: CFG could be [dll, lib or all]
 	
-	::call "%buildlib%" lib bzip2 1.0.6
+	::call "%buildlib%" all bzip2 1.0.6
 	call "%buildlib%" lib expat 2.0.1
 	call "%buildlib%" lib freetype 2.4.8
-	call "%buildlib%" lib zlib 1.2.5
-
-:: restore evnironment
+	
+	call "%buildlib%" all zlib 1.2.5
+	call "%buildlib%" lib libpng 1.5.7 lpng157
+	call "%buildlib%" lib jpeg 8d
+	
+	call "%buildlib%" lib libogg 1.3.0
+	call "%buildlib%" lib libvorbis 1.3.2
+	call "%buildlib%" lib libtheora 1.1.1
+	
+:: restore paths
 	set INCLUDE=%SAVE_INCLUDE%
 	set LIB=%SAVE_LIB%
-	
-echo ........................................................................
-echo .
-echo .
+echo ............................................................................
+echo.
+echo.
 
 goto :end
 

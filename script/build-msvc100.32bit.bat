@@ -5,6 +5,7 @@ set cdstore_build_dir__=%~dp0\mswin
 
 :: configure
 cd %~dp0\..
+set logout=%CD%\logs
 set output=%CD%\build
 set source=%CD%\libs
 
