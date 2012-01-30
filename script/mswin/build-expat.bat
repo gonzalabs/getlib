@@ -6,6 +6,7 @@ if %libcfg% NEQ lib (
 
 set project=expat_static
 set config=%defbuildcfg%
+set libfile=libexpatMD
 
 if "%toolset%"=="msvc-8.0" (
 	set solution=expat-vc80.sln
@@ -28,7 +29,7 @@ goto %command%
 	
 	:: lib
 	echo.  copy lib files:
-	copy win32\bin\%variant%\libexpatMD.lib "%outdir-lib%\"
+	copy win32\bin\%variant%\%libfile%.lib "%outdir-lib%\"
 	
 	:: include
 	echo.  copy include files:
