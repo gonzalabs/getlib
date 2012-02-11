@@ -71,7 +71,7 @@ if /I %comntools%=="%VSINSTALLDIR%\Common7\Tools\" (
 )
 
 if "%msvc-express%"=="yes" (
-	set compiler=VCExpress.exe
+	set compiler=vcexpress
 ) else (
 	set compiler=devenv
 )
@@ -180,7 +180,7 @@ echo ...........................................................................
 	if %commandprompt_alreadysetup%==yes (
 		echo . Required command prompt has been ALREADY SETUP via:
 		echo .     %commandprompt%
-		echo . If an issue occure start the build procedure over in a clear environment!
+		echo . If an issue occure start the build procedure over in a clean environment!
 	) else (
 		echo . Setting up command prompt via:
 		echo .     %commandprompt%

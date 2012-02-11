@@ -16,13 +16,13 @@ Thumbs.db
 *.user
 
 ##
-##  gsl structure
+##  project structure
 build/
 libs/
 logs/
 
 ##
-##  gsl config and log files
+##  config and log files
 *.cfg
 !*-enduser.cfg
 *.log
