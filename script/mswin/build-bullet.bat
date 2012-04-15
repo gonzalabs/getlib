@@ -8,9 +8,9 @@ set config=%defbuildcfg%
 set projects=LinearMath BulletCollision BulletDynamics
 
 if "%variant%"=="debug" (
-	set suffix=
-) else (
 	set suffix=_debug
+) else (
+	set suffix=
 )
 
 if "%toolset%"=="msvc-8.0" (
@@ -29,8 +29,7 @@ echo.    solution='%solution%'
 
 for %%p in (%projects%) do (
 	echo.    project='%%p' config=%config%
-	echo.        PRETENDING TO COMPILE %%p
-	rem %compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
+	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
 )
 goto %command%
 
@@ -39,7 +38,7 @@ goto %command%
 	:: lib
 	echo.  copy lib files:
 	for %%p in (%projects%) do (
-		copy lib\%%p%suffix%.lib "%outdir-lib%\"
+		copy lib\%%p%suffix%.lib "%outdir-lib%\%%p.lib"
 	)
 	
 	:: include

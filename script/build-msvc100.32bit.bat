@@ -10,7 +10,7 @@ set output=%CD%\build
 set source=%CD%\libs
 
 set toolset=msvc-10.0
-set msvc-express=yes
+set msvc-express=no
 set address-model=32
 set clean-output=yes
 
