@@ -29,7 +29,7 @@ echo.    solution='%solution%'
 
 for %%p in (%projects%) do (
 	echo.    project='%%p' config=%config%
-rem	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
+	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
 )
 goto %command%
 
