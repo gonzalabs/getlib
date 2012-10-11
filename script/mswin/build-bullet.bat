@@ -23,13 +23,13 @@ if "%toolset%"=="msvc-8.0" (
 	set keydir=vs2012
 )
 
-set solution=msvc\%keydir%\0BulletSolution.sln
+set solution=build\%keydir%\0BulletSolution.sln
 
 echo.    solution='%solution%'
 
 for %%p in (%projects%) do (
 	echo.    project='%%p' config=%config%
-	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
+rem	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
 )
 goto %command%
 
@@ -38,7 +38,7 @@ goto %command%
 	:: lib
 	echo.  copy lib files:
 	for %%p in (%projects%) do (
-		copy lib\%%p%suffix%.lib "%outdir-lib%\%%p.lib"
+		copy lib\%%p_%keydir%%suffix%.lib "%outdir-lib%\%%p.lib"
 	)
 	
 	:: include

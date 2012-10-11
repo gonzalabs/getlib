@@ -7,10 +7,10 @@
 	
 ::call "%buildlib%" all bzip2 1.0.6
 
-set debug_build=no
+set debug_build=yes
 
 if "%debug_build%"=="yes" (
-	call "%buildlib%" lib bullet 2.80-rev2531
+	call "%buildlib%" lib bullet 2.81-rev2613
 ) else (
 	call "%buildlib%" lib expat 2.0.1
 	call "%buildlib%" lib freetype 2.4.8
