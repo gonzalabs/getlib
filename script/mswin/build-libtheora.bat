@@ -4,32 +4,28 @@ if %libcfg% NEQ lib (
 	goto end
 )
 
-set config=%defbuildcfg%
-set project=libtheora_static
-set libfile=libtheora_static
-
-if "%toolset%"=="msvc-8.0" (
-	set keydir=VS2005
-) else if "%toolset%"=="msvc-9.0" (
-	set keydir=VS2008
-) else if "%toolset%"=="msvc-10.0" (
+if "%toolset%"=="msvc-10.0" (
 	set keydir=VS2010
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=VS2012
+)  else if "%toolset%"=="msvc-12.0" (
+	set keydir=VS2014
 )
 
-set solution=win32\%keydir%\libtheora_static.sln
+set config=%defbuildcfg%
+set libfile=libtheora_static
+set project=.\win32\%keydir%\libtheora\libtheora_static.vcxproj
 
-echo.    solution='%solution%'
-echo.    project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% /useenv 
+echo.    project='%project%' 
+echo.    config=%config%
+%compiler% /t:%command% /p:Configuration=%config% /p:UseEnv=true /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% "%project%"
 goto %command%
 
 :build
 :rebuild
 	:: lib
 	echo.  copy lib files:
-	copy win32\%keydir%\%platform_str%\%configure_str%\%libfile%.lib "%outdir-lib%\"
+	copy win32\%keydir%\libtheora\%platform_str%\%configure_str%\%libfile%.lib "%outdir-lib%\"
 	
 	:: include
 	echo.  copy include files:

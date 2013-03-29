@@ -8,19 +8,18 @@ set project=expat_static
 set config=%defbuildcfg%
 set libfile=libexpatMD
 
-if "%toolset%"=="msvc-8.0" (
-	set solution=expat-vc80.sln
-) else if "%toolset%"=="msvc-9.0" (
-	set solution=expat-vc90.sln
-) else if "%toolset%"=="msvc-10.0" (
+if "%toolset%"=="msvc-10.0" (
 	set solution=expat-vc100.sln
 )  else if "%toolset%"=="msvc-11.0" (
 	set solution=expat-vc110.sln
+)  else if "%toolset%"=="msvc-12.0" (
+	set solution=expat-vc120.sln
 )
 
 echo.    solution='%solution%'
 echo.    project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
+::%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% 
+%compiler% /t:%command% /p:Configuration=%config% /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% %solution%
 goto %command%
 
 :build

@@ -5,38 +5,36 @@ if %libcfg% NEQ lib (
 )
 
 set config=%defbuildcfg%
-set project=libvorbis_static
-set libfile=libvorbis_static
 
-set project2=libvorbisfile
-set libfile2=libvorbisfile_static
-
-if "%toolset%"=="msvc-8.0" (
-	set keydir=VS2005
-) else if "%toolset%"=="msvc-9.0" (
-	set keydir=VS2008
-) else if "%toolset%"=="msvc-10.0" (
+if "%toolset%"=="msvc-10.0" (
 	set keydir=VS2010
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=VS2012
+)  else if "%toolset%"=="msvc-12.0" (
+	set keydir=VS2014
 )
 
-set solution=win32\%keydir%\vorbis_static.sln
+set project1=win32\%keydir%\libvorbis\libvorbis_static.vcxproj
+set libfile1=libvorbis_static
 
-echo.    solution='%solution%'
-echo.    project='%project%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project%" /out %liblog% /useenv 
-echo.    solution='%solution%'
-echo.    project='%project2%' config=%config%
-%compiler% %solution% /%command% %config% /project "%project2%" /out %liblog% /useenv 
+set project2=win32\%keydir%\libvorbisfile\libvorbisfile_static.vcxproj
+set libfile2=libvorbisfile_static
+
+echo.    project='%project1%'
+echo.    config=%config%
+%compiler% /t:%command% /p:Configuration=%config% /p:UseEnv=true /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% "%project1%"
+
+echo.    project='%project2%'
+echo.    config=%config%
+%compiler% /t:%command% /p:Configuration=%config% /p:UseEnv=true /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% "%project2%"
 goto %command%
 
 :build
 :rebuild
 	:: lib
 	echo.  copy lib files:
-	copy win32\%keydir%\%platform_str%\%configure_str%\%libfile%.lib "%outdir-lib%\"
-	copy win32\%keydir%\%platform_str%\%configure_str%\%libfile2%.lib "%outdir-lib%\"
+	copy win32\%keydir%\libvorbis\%platform_str%\%configure_str%\%libfile1%.lib "%outdir-lib%\"
+	copy win32\%keydir%\libvorbisfile\%platform_str%\%configure_str%\%libfile2%.lib "%outdir-lib%\"
 	
 	:: include
 	echo.  copy include files:

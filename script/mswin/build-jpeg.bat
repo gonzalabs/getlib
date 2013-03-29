@@ -2,30 +2,36 @@
 if %libcfg%==lib (
 	set target=libjpeg.lib
 	set dllfile=
-	set libfile=libjpeg
+	set libfile=jpeg
 ) else (
 	echo.  WARNING: no rule to build a library "%libname%" for the target "%libcfg%" - skip
 	goto end
 )
 
+set config=%defbuildcfg%
+set project=jpeg
+set solution=jpeg.sln
+
+echo.    solution='%solution%'
+echo.    project='%project%' config=%config%
+
+if not exist %solution% (
+	echo.  MSVC Solution doesn't exist. It will be generate...
+	nmake /f makefile.vc setup-v10
+)
+%compiler% /t:%command% /p:Configuration=%defbuildcfg% /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% %solution%
+	
 goto %command%
 
 :build
 :rebuild
-	if not exist .\Makefile copy makefile.vc Makefile
-
-	echo.  perform clean...
-	nmake clean>>"%liblog%" 2>&1
-	
-	echo.  perform make...
-	nmake %target%>>"%liblog%" 2>&1
-	
 	:: bin
-	if %libcfg%==dll copy %dllfile%.dll "%outdir-bin%\"
+	:: if %libcfg%==dll copy %dllfile%.dll "%outdir-bin%\"
 	
 	:: lib
+	:: file is outputed in %outdir%
 	echo.  copy lib files:
-	copy %libfile%.lib "%outdir-lib%\"
+	move "%outdir%\%libfile%.lib" "%outdir-lib%\"
 	
 	:: include
 	echo.  copy include files:

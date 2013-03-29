@@ -13,23 +13,17 @@ if "%variant%"=="debug" (
 	set suffix=
 )
 
-if "%toolset%"=="msvc-8.0" (
-	set keydir=vs2005
-) else if "%toolset%"=="msvc-9.0" (
-	set keydir=vs2008
-) else if "%toolset%"=="msvc-10.0" (
+if "%toolset%"=="msvc-10.0" (
 	set keydir=vs2010
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=vs2012
+)  else if "%toolset%"=="msvc-12.0" (
+	set keydir=vs2014
 )
-
-set solution=build\%keydir%\0BulletSolution.sln
-
-echo.    solution='%solution%'
 
 for %%p in (%projects%) do (
 	echo.    project='%%p' config=%config%
-	%compiler% %solution% /%command% %config% /project "%%p" /out %liblog% 
+	%compiler% /t:%command% /p:Configuration=%config% /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% build\%keydir%\%%p.vcxproj
 )
 goto %command%
 

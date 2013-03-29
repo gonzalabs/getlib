@@ -44,14 +44,12 @@ if NOT defined toolset (
 	goto :error
 )
 
-if /i "%toolset%" EQU "msvc-8.0" ( 
-	set comntools="%VS80COMNTOOLS%"
-) else if /i "%toolset%" EQU "msvc-9.0" ( 
-	set comntools="%VS90COMNTOOLS%"
-) else if /i "%toolset%" EQU "msvc-10.0" ( 
+if /i "%toolset%" EQU "msvc-10.0" ( 
 	set comntools="%VS100COMNTOOLS%"
 ) else if /i "%toolset%" EQU "msvc-11.0" ( 
 	set comntools="%VS110COMNTOOLS%"
+) else if /i "%toolset%" EQU "msvc-12.0" ( 
+	set comntools="%VS120COMNTOOLS%"
 ) else (
 	echo ERROR: unknown toolset value "%toolset%" is specified
 	goto :error
@@ -70,11 +68,12 @@ if /I %comntools%=="%VSINSTALLDIR%\Common7\Tools\" (
 	set commandprompt_alreadysetup=no
 )
 
-if "%msvc-express%"=="yes" (
-	set compiler=vcexpress
-) else (
-	set compiler=devenv
-)
+set compiler=MSBuild
+::if "%msvc-express%"=="yes" (
+::	set compiler=VCExpress
+::) else (
+::	set compiler=devenv
+::)
 
 if NOT defined variant (
 	set variant=debug
@@ -122,7 +121,10 @@ if NOT defined logout (
 
 
 :: convenience variables
-set defbuildcfg="%configure_str%|%platform_str%"
+:: platform should be implicitly selected using apropriate
+:: configuration of the build environment
+:: set defbuildcfg="%configure_str%|%platform_str%" 
+set defbuildcfg="%configure_str%" 
 set buildlib=%~dp0\detail\build-lib.bat
 
 
