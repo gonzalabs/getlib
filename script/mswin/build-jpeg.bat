@@ -31,7 +31,7 @@ goto %command%
 	:: lib
 	:: file is outputed in %outdir%
 	echo.  copy lib files:
-	move "%outdir%\%libfile%.lib" "%outdir-lib%\"
+	move "%outdir%\%libfile%.lib" "%outdir-lib%\%target%.lib"
 	
 	:: include
 	echo.  copy include files:
