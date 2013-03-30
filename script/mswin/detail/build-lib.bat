@@ -21,10 +21,12 @@ if "%3"=="" (
 	set libver=%3
 )
 
-if "%4"=="" (
+set param4=%4
+set param4=%param4:"=%
+if "%param4%"=="" (
 	set libdir=%libname%-%libver%
 ) else (
-	set libdir=%4
+	set libdir=%param4%
 )
 
 cd %~dp0..
@@ -64,7 +66,8 @@ echo ...... at %libdir%
 	cd "%source%"
 	if NOT exist "%libdir%" (
 		echo.
-		echo.  ERROR: library dir not found at %cd%\%libdir%
+		echo.  ERROR: library dir not found at %libdir%
+		echo.  current dir is %cd%
 		goto :error2
 	)
 

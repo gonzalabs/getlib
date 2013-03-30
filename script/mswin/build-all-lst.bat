@@ -9,7 +9,7 @@
 set debug_build=no
 
 if "%debug_build%"=="yes" (
-	call "%buildlib%" lib bullet 2.81-rev2613
+	call "%buildlib%" lib fbxsdk 2013.3 "C:\Program Files\Autodesk\FBX\FBX SDK\2013.3"
 ) else (
 	call "%buildlib%" lib expat 2.0.1
 	call "%buildlib%" lib freetype 2.4.11
@@ -23,5 +23,7 @@ if "%debug_build%"=="yes" (
 	call "%buildlib%" lib libtheora 1.1.1
 
 	call "%buildlib%" lib bullet 2.81-rev2613
+	
+	call "%buildlib%" lib fbxsdk 2013.3 "C:\Program Files\Autodesk\FBX\FBX SDK\2013.3"
 )
 	
