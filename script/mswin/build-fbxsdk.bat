@@ -1,10 +1,10 @@
 
 if %libcfg%==dll (
-	set dllfile=fbxsdk-2013.3
-	set libfile=fbxsdk-2013.3
+	set dllfile=fbxsdk-2014.1
+	set libfile=fbxsdk-2014.1
 ) else if %libcfg%==lib (
 	set dllfile=
-	set libfile=fbxsdk-2013.3-md
+	set libfile=fbxsdk-2014.1-md
 ) else (
 	echo.  WARNING: no rule to build a library "%libname%" for the target "%libcfg%" - skip
 	goto end
@@ -16,7 +16,7 @@ if "%variant%"=="debug" (
 	set suffix=
 )
 
-set fbxsdk-bin=%libdir%\lib\vs2010\%platform_xZZ%
+set fbxsdk-bin=%libdir%\lib\vs2012\%platform_xZZ%
 set fbxsdk-lib=%fbxsdk-bin%
 set fbxsdk-include=%libdir%\include
 

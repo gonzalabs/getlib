@@ -21,8 +21,9 @@ if "%3"=="" (
 	set libver=%3
 )
 
-set param4=%4
+set param4="%4"
 set param4=%param4:"=%
+
 if "%param4%"=="" (
 	set libdir=%libname%-%libver%
 ) else (

@@ -1,6 +1,6 @@
 
 if %libcfg%==lib (
-	set target=libjpeg.lib
+	set target=libjpeg
 	set dllfile=
 	set libfile=jpeg
 ) else (
