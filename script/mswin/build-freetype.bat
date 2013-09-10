@@ -7,6 +7,7 @@ if %libcfg% NEQ lib (
 set project=freetype
 set config=%defbuildcfg%
 
+:: choose dir
 if "%toolset%"=="msvc-10.0" (
 	set keydir=vc2010
 )  else if "%toolset%"=="msvc-11.0" (
@@ -15,14 +16,19 @@ if "%toolset%"=="msvc-10.0" (
 	set keydir=vc2014
 )
 
-if "%variant%"=="debug" (
-	set libfile=freetype2411_D
-) else (
-	set libfile=freetype2411
+:: choose lib file name
+for /f "tokens=1,2,3 delims=." %%a in ("%libver%") do (
+	set libver1=%%a&set libver2=%%b&set libver3=%%c
 )
 
-set solution=builds\win32\%keydir%\freetype.sln
+set libfile=freetype%libver1%%libver2%%libver3%
 
+if "%variant%"=="debug" (
+	set libfile=%libfile%_D
+)
+
+:: build config
+set solution=builds\win32\%keydir%\freetype.sln
 
 echo.    solution='%solution%'
 echo.    project='%project%' config=%config%

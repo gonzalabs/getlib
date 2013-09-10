@@ -9,7 +9,7 @@
 set debug_build=yes
 
 if "%debug_build%"=="yes" (
-	call "%buildlib%" lib zlib 1.2.7
+	call "%buildlib%" lib freetype 2.4.11
 ) else (
 	call "%buildlib%" lib expat 2.0.1
 	call "%buildlib%" lib freetype 2.4.11
