@@ -18,6 +18,8 @@ if "%toolset%"=="msvc-10.0" (
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=vs2012
 )  else if "%toolset%"=="msvc-12.0" (
+	set keydir=vs2013
+)  else if "%toolset%"=="msvc-13.0" (
 	set keydir=vs2014
 )
 

@@ -13,6 +13,8 @@ if "%toolset%"=="msvc-10.0" (
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=vc2012
 )  else if "%toolset%"=="msvc-12.0" (
+	set keydir=vc2013
+)  else if "%toolset%"=="msvc-13.0" (
 	set keydir=vc2014
 )
 
@@ -28,7 +30,7 @@ if "%variant%"=="debug" (
 )
 
 :: build config
-set solution=builds\win32\%keydir%\freetype.sln
+set solution=builds\windows\%keydir%\freetype.sln
 
 echo.    solution='%solution%'
 echo.    project='%project%' config=%config%
@@ -43,7 +45,7 @@ goto %command%
 	
 	:: include
 	echo.  copy include files:
-	xcopy include\* "%outdir-include%" /Q /S /Y
+	xcopy include\* "%outdir-include%\freetype\" /Q /S /Y
 	
 	goto end
 

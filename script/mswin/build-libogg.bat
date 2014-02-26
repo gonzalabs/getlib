@@ -9,6 +9,8 @@ if "%toolset%"=="msvc-10.0" (
 )  else if "%toolset%"=="msvc-11.0" (
 	set keydir=VS2012
 )  else if "%toolset%"=="msvc-12.0" (
+	set keydir=VS2013
+)  else if "%toolset%"=="msvc-13.0" (
 	set keydir=VS2014
 )
 
