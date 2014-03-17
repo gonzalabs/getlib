@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 # script: external libraries build script
@@ -35,17 +35,16 @@ set -e
 # SOFTWARE.
 
 
-OPTION_SDK_VERSION="5.0"
+OPTION_SDK_VERSION="7.1"
 #OPTION_PLATFORMS="iPhoneSimulator-i386 iPhoneOS-armv6 iPhoneOS-armv7"
 OPTION_PLATFORMS="iPhoneSimulator-i386"
-OPTION_GCC_VERSION="4.2"
 
-OPTION_LIBSDIR_LOCATION="`pwd`/../../libs"
-OPTION_OUTPUT_DEVELOPER="`pwd`/../../build"
-OPTION_SOURCE_DEVELOPER="`xcode-select --print-path`"
+OPTION_LIBSRC_LOCATION="`pwd`/../../libs"
+OPTION_OUTDIR_LOCATION="`pwd`/../../build"
+OPTION_DEVDIR_LOCATION="`xcode-select --print-path`"
 
-OPTION_OUTPUT_PLATFORMS=${OPTION_OUTPUT_DEVELOPER}/Platforms
-OPTION_SOURCE_PLATFORMS=${OPTION_SOURCE_DEVELOPER}/Platforms
+OPTION_OUTPUT_PLATFORMS=${OPTION_OUTDIR_LOCATION}/Platforms
+OPTION_DEVDIR_PLATFORMS=${OPTION_DEVDIR_LOCATION}/Platforms
 
 OPTION_LOG_SEPARATEFILE="yes"
 
@@ -63,10 +62,10 @@ COL_RESET="\x1b[39;49;00m"
 
 logcfg_general()
 {
-	echo -e $COL_HEADER1"GENERAL CONFIG:"$COL_RESET" SDK ${OPTION_SDK_VERSION}, GCC ${OPTION_GCC_VERSION}"
-	echo "     xcode sdk platforms: $OPTION_SOURCE_PLATFORMS"
+	echo -e $COL_HEADER1"GENERAL CONFIG:"$COL_RESET" SDK ${OPTION_SDK_VERSION}"
+	echo "     xcode sdk platforms: $OPTION_DEVDIR_PLATFORMS"
 	echo "    output platforms dir: $OPTION_OUTPUT_PLATFORMS"
-	echo "    libraries source dir: $OPTION_LIBSDIR_LOCATION"
+	echo "    libraries source dir: $OPTION_LIBSRC_LOCATION"
 	echo -e $COL_STYLE_B"available SDKs:"$COL_RESET
 	xcodebuild -showsdks
 	echo -e $COL_STYLE_B"demanded platforms:"$COL_RESET
@@ -76,16 +75,19 @@ logcfg_general()
 default_config()
 {
 	# default parameters
-	export    CPP=${DEVROOT}/usr/bin/llvm-cpp-${OPTION_GCC_VERSION}
-	export CXXCPP=${CPP}
-	export     CC=${DEVROOT}/usr/bin/llvm-gcc-${OPTION_GCC_VERSION}
-	export    CXX=${DEVROOT}/usr/bin/llvm-g++-${OPTION_GCC_VERSION}
-	export     LD=${DEVROOT}/usr/bin/ld
+	export    CPP="${DEVROOT}/usr/bin/clang-cpp"
+	export CXXCPP="${CPP}"
+	export     CC="${DEVROOT}/usr/bin/gcc"
+	export    CXX="${DEVROOT}/usr/bin/g++"
+	export     LD="${DEVROOT}/usr/bin/ld"
 	unset AR
 	unset AS
-	export NM=${DEVROOT}/usr/bin/nm
-	export RANLIB=${DEVROOT}/usr/bin/ranlib
-	
+	#export AR="${BUILD_DEVROOT}/usr/bin/ar"
+	#export AS="${BUILD_DEVROOT}/usr/bin/as"
+	export NM="${DEVROOT}/usr/bin/nm"
+	export STRIP="${BUILD_DEVROOT}/usr/bin/strip"
+	export RANLIB="${DEVROOT}/usr/bin/ranlib"
+
 	export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
 	export CXXCPPFLAGS=$CPPFLAGS
 	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT}"
@@ -107,7 +109,7 @@ build_library()
 {
 	libname=$1
 	version=$2
-	builder=${OPTION_OUTPUT_DEVELOPER}/build-${libname}.sh
+	builder=${SCRIPT_DIR}/build-${libname}.sh
 	
 	default_config
 	
@@ -135,11 +137,13 @@ build_all_platforms()
 		export PLATFORM="${PLATFORM}"
 		export HOSTARCH="${HOSTARCH}"
 		export SDK="${OPTION_SDK_VERSION}"
-		
-		export DEVROOT="${OPTION_SOURCE_PLATFORMS}/${PLATFORM}.platform/Developer"
+
+		PLATFORMDIR="${OPTION_DEVDIR_PLATFORMS}/${PLATFORM}.platform"
+
+		export DEVROOT="${PLATFORMDIR}/Developer"
 		export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${SDK}.sdk"
 		export ROOTDIR="${OPTION_OUTPUT_PLATFORMS}/${PLATFORM}${SDK}-${HOSTARCH}"
-		export LIBROOT="${OPTION_LIBSDIR_LOCATION}"
+		export LIBROOT="${OPTION_LIBSRC_LOCATION}"
 
 		# log config		
 		echo -e $COL_HEADER2"BUILD FOR PLATFORM: "$COL_STYLE_R"$PLATFORM_FULL_NAME"$COL_RESET
@@ -148,21 +152,30 @@ build_all_platforms()
 		echo "     platform SDK root: $SDKROOT"
 		echo "       output root dir: $ROOTDIR"
 
-		# check/create dirs		
-		mkdir -p $ROOTDIR
+		# check dirs
+		if [ ! -d "$PLATFORMDIR" ]
+		then
+			echo -e $COL_ERR_MSG"ERROR: Platform dir does not exist: "$COL_RESET"${PLATFORMDIR}"
+			exit
+		fi
+
 		if [ ! -d "$SDKROOT" ]
 		then
 			echo -e $COL_ERR_MSG"ERROR: platform SDK dir does not exist: "$COL_RESET"${SDKROOT}"
 			exit
 		fi
-		
+
+		# create dirs
+		mkdir -p $ROOTDIR
+		mkdir -p $LIBROOT
+
 		# libraries
 		build_library "expat" "2.0.1"
-		build_library "zlib" "1.2.5"
-		build_library "libpng" "1.5.7"
-		build_library "jpeg" "8c"
-		build_library "freetype" "2.4.8"
-		
+		#build_library "zlib" "1.2.5"
+		#build_library "libpng" "1.5.7"
+		#build_library "jpeg" "8c"
+		#build_library "freetype" "2.4.8"
+
 		#build_library "libogg" "1.3.0"
 		#build_library "libvorbis" "1.3.2"
 		#build_library "libtheora" "1.1.1"
