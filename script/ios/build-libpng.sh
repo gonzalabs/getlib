@@ -29,7 +29,8 @@ libname="libpng-${libver}"
 libdir="${libname}"
 libtar="${libname}.tar.gz"
 #liburl="http://download.sourceforge.net/libpng/${libtar}"	there's a long delay before it starts
-liburl="ftp://ftp.simplesystems.org/pub/libpng/png/src/${libtar}"
+liburl="ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/${libtar}"
+
 
 if [ ! -d "${libdir}" ]
 then

@@ -47,7 +47,7 @@ then
 	make clean
 fi
 
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --enable-static --disable-shared
+./configure --build=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --enable-static --disable-shared
 make
 make install --ignore-errors  # Ignore errors due to share libraries missing
 

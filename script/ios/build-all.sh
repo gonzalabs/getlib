@@ -75,8 +75,8 @@ logcfg_general()
 default_config()
 {
 	# default parameters
-	export    CPP="${DEVROOT}/usr/bin/clang-cpp"
-	export CXXCPP="${CPP}"
+#	export    CPP="${DEVROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp"
+#	export CXXCPP="${CPP}"
 	export     CC="${DEVROOT}/usr/bin/gcc"
 	export    CXX="${DEVROOT}/usr/bin/g++"
 	export     LD="${DEVROOT}/usr/bin/ld"
@@ -84,15 +84,15 @@ default_config()
 	unset AS
 	#export AR="${BUILD_DEVROOT}/usr/bin/ar"
 	#export AS="${BUILD_DEVROOT}/usr/bin/as"
-	export NM="${DEVROOT}/usr/bin/nm"
-	export STRIP="${BUILD_DEVROOT}/usr/bin/strip"
-	export RANLIB="${DEVROOT}/usr/bin/ranlib"
+	export NM="${TOOLCHAINDIR}/usr/bin/nm"
+	export STRIP="${TOOLCHAINDIR}/usr/bin/strip"
+	export RANLIB="${TOOLCHAINDIR}/usr/bin/ranlib"
 
-	export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
-	export CXXCPPFLAGS=$CPPFLAGS
-	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT}"
+    #export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
+    #export CXXCPPFLAGS=$CPPFLAGS
+	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=7.0 -isysroot ${SDKROOT} -I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
 	export CXXFLAGS=$CFLAGS
-	export  LDFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -isysroot ${SDKROOT} -L${ROOTDIR}/lib -L${SDKROOT}/usr/lib -L${DEVROOT}/usr/lib"
+	export  LDFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=7.0 -isysroot ${SDKROOT} -L${ROOTDIR}/lib -L${SDKROOT}/usr/lib -L${DEVROOT}/usr/lib"
 }
 
 create_output_rootdir()
@@ -138,7 +138,8 @@ build_all_platforms()
 		export HOSTARCH="${HOSTARCH}"
 		export SDK="${OPTION_SDK_VERSION}"
 
-		PLATFORMDIR="${OPTION_DEVDIR_PLATFORMS}/${PLATFORM}.platform"
+		export PLATFORMDIR="${OPTION_DEVDIR_PLATFORMS}/${PLATFORM}.platform"
+        export TOOLCHAINDIR="${OPTION_DEVDIR_LOCATION}/Toolchains/XcodeDefault.xctoolchain"
 
 		export DEVROOT="${PLATFORMDIR}/Developer"
 		export SDKROOT="${DEVROOT}/SDKs/${PLATFORM}${SDK}.sdk"
@@ -171,10 +172,10 @@ build_all_platforms()
 
 		# libraries
 		build_library "expat" "2.0.1"
-		#build_library "zlib" "1.2.5"
-		#build_library "libpng" "1.5.7"
-		#build_library "jpeg" "8c"
-		#build_library "freetype" "2.4.8"
+		build_library "zlib" "1.2.5"
+		build_library "libpng" "1.6.10"
+		build_library "jpeg" "9a"
+		build_library "freetype" "2.5.3"
 
 		#build_library "libogg" "1.3.0"
 		#build_library "libvorbis" "1.3.2"
