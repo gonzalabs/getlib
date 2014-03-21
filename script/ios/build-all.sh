@@ -36,6 +36,7 @@ set -e
 
 
 OPTION_SDK_VERSION="7.1"
+OPTION_IOS_VERSION_MIN="7.0"
 #OPTION_PLATFORMS="iPhoneSimulator-i386 iPhoneOS-armv6 iPhoneOS-armv7"
 OPTION_PLATFORMS="iPhoneSimulator-i386"
 
@@ -47,6 +48,7 @@ OPTION_OUTPUT_PLATFORMS=${OPTION_OUTDIR_LOCATION}/Platforms
 OPTION_DEVDIR_PLATFORMS=${OPTION_DEVDIR_LOCATION}/Platforms
 
 OPTION_LOG_SEPARATEFILE="yes"
+OPTION_CLEAN_OUTPUT=0
 
 
 SCRIPT_DIR=`pwd`
@@ -74,6 +76,8 @@ logcfg_general()
 
 default_config()
 {
+	IOSVERMIN=${OPTION_IOS_VERSION_MIN}
+
 	# default parameters
 #	export    CPP="${DEVROOT}/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp"
 #	export CXXCPP="${CPP}"
@@ -90,16 +94,20 @@ default_config()
 
     #export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
     #export CXXCPPFLAGS=$CPPFLAGS
-	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=7.0 -isysroot ${SDKROOT} -I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
+	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=${IOSVERMIN} -isysroot ${SDKROOT} -I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
 	export CXXFLAGS=$CFLAGS
-	export  LDFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=7.0 -isysroot ${SDKROOT} -L${ROOTDIR}/lib -L${SDKROOT}/usr/lib -L${DEVROOT}/usr/lib"
+	export  LDFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=${IOSVERMIN} -isysroot ${SDKROOT} -L${ROOTDIR}/lib -L${SDKROOT}/usr/lib -L${DEVROOT}/usr/lib"
 }
 
 create_output_rootdir()
 {
 	echo -e $COL_STYLE_B"creating output directories"$COL_RESET" at $OPTION_OUTPUT_PLATFORMS"
-	
-	rm -rf $OPTION_OUTPUT_PLATFORMS
+
+	if [ $OPTION_CLEAN_OUTPUT != 0 ]
+	then
+		rm -rf $OPTION_OUTPUT_PLATFORMS
+	fi
+
 	mkdir -p $OPTION_OUTPUT_PLATFORMS
 	
 	echo -e $COL_STYLE_B"output directories created"$COL_RESET
@@ -171,11 +179,11 @@ build_all_platforms()
 		mkdir -p $LIBROOT
 
 		# libraries
-		build_library "expat" "2.0.1"
-		build_library "zlib" "1.2.5"
+#		build_library "expat" "2.0.1"
+		build_library "zlib" "1.2.8"
 		build_library "libpng" "1.6.10"
-		build_library "jpeg" "9a"
-		build_library "freetype" "2.5.3"
+#		build_library "jpeg" "9a"
+#		build_library "freetype" "2.5.3"
 
 		#build_library "libogg" "1.3.0"
 		#build_library "libvorbis" "1.3.2"
