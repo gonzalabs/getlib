@@ -92,9 +92,9 @@ default_config()
 	export STRIP="${TOOLCHAINDIR}/usr/bin/strip"
 	export RANLIB="${TOOLCHAINDIR}/usr/bin/ranlib"
 
-    #export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
-    #export CXXCPPFLAGS=$CPPFLAGS
-	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=${IOSVERMIN} -isysroot ${SDKROOT} -I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
+    export CPPFLAGS="-I${ROOTDIR}/include -I${SDKROOT}/usr/include -I${DEVROOT}/usr/include"
+    export CXXCPPFLAGS=$CPPFLAGS
+	export   CFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=${IOSVERMIN} -isysroot ${SDKROOT} ${CPPFLAGS}"
 	export CXXFLAGS=$CFLAGS
 	export  LDFLAGS="-arch ${HOSTARCH} -pipe -no-cpp-precomp -miphoneos-version-min=${IOSVERMIN} -isysroot ${SDKROOT} -L${ROOTDIR}/lib -L${SDKROOT}/usr/lib -L${DEVROOT}/usr/lib"
 }
