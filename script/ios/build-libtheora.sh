@@ -47,7 +47,7 @@ then
 	make clean
 fi
 
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --disable-shared --enable-static --disable-spec --disable-oggtest --disable-vorbistest --disable-examples
+./configure --prefix=${CFGPRFX} --host=${CFGHOST} --disable-shared --enable-static --disable-spec --disable-oggtest --disable-vorbistest --disable-examples
 #  --enable-valgrind-testing     enable running of tests inside Valgrind
 #  --disable-asm           disable assembly optimizations
 #  --disable-sdltest       Do not try to compile and run a test SDL program
@@ -56,5 +56,5 @@ fi
 #  --disable-encode        disable encoding support
     
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 

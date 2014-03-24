@@ -53,7 +53,7 @@ then
 	fi
 fi
 
-./configure --prefix=${ROOTDIR} --static
+./configure --prefix=${CFGPRFX} --archs="-arch ${HOSTARCH}" --static
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 

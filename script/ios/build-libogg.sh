@@ -47,7 +47,7 @@ then
 	make clean
 fi
 
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --disable-shared --enable-static
+./configure --prefix=${CFGPRFX} --host=${CFGHOST} --disable-shared --enable-static
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 
