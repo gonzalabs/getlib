@@ -37,7 +37,8 @@ set -e
 
 # sdk options
 #OPTION_PLATFORMS="iphonesimulator-i386 iphoneos-armv6 iphoneos-armv7"
-OPTION_PLATFORMS="iphonesimulator-i386"
+#OPTION_PLATFORMS="iphonesimulator-i386"
+OPTION_PLATFORMS="iphoneos-armv7"
 OPTION_SDK_VERSION="7.1"
 OPTION_IOS_VERSION_MIN="7.0"
 
@@ -92,30 +93,28 @@ default_config()
 	IOSVERMIN=${OPTION_IOS_VERSION_MIN}
 
 	# default parameters
-#export    CPP="${TOOLCPP}"
+#	export    CPP="${TOOLCPP}"
 #	export CXXCPP="${TOOLCPP}"
 	unset CPP
 	unset CXXCPP
 	export     CC="${TOOLCC}"
 	export    CXX="${TOOLCXX}"
 	export     LD="${TOOLLD}"
-	unset AR
-	unset AS
-	#export AR="${BUILD_DEVROOT}/usr/bin/ar"
-	#export AS="${BUILD_DEVROOT}/usr/bin/as"
-#export NM="${TOOLCHAINDIR}/usr/bin/nm"
-#export STRIP="${TOOLCHAINDIR}/usr/bin/strip"
-#export RANLIB="${TOOLCHAINDIR}/usr/bin/ranlib"
+	export     AR="${TOOLAR}"
+	export     AS="${TOOLAS}"
+	export     NM="${TOOLNM}"
+	export  STRIP="${TOOLSTRIP}"
+	export RANLIB="${TOOLRANLIB}"
 
 #-I${SDKROOT}/usr/include
-    export CPPFLAGS="-I${OUTDIR}/include"
+    export    CPPFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN} -I${OUTDIR}/include"
     export CXXCPPFLAGS=$CPPFLAGS
 
 #-isysroot ${SDKROOT}
-	export   CFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN}"
-	export CXXFLAGS=$CFLAGS
+	export      CFLAGS="${CPPFLAGS}"
+	export    CXXFLAGS=$CFLAGS
 #-L${SDKROOT}/usr/lib
-	export  LDFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN} -L${OUTDIR}/lib"
+	export     LDFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN} -L${OUTDIR}/lib"
 }
 
 build_library()
@@ -151,21 +150,23 @@ build_all_platforms()
 		export HOSTARCH="${HOSTARCH}"
 		export   SDKVER="${OPTION_SDK_VERSION}"
 
-#export PLATFORMDIR=`xcrun --sdk ${PLATFORM}${SDKVER} -show-sdk-platform-path`
-#export DEVROOT="${PLATFORMDIR}/Developer"
+		export    SDKROOT="`xcrun --sdk ${PLATFORM}${SDKVER} -show-sdk-path`"
 
-		export SDKROOT="`xcrun --sdk ${PLATFORM}${SDKVER} -show-sdk-path`"
+		export     OUTDIR="${OPTION_OUTDIR_LOCATION}/${PLATFORM}${SDKVER}-${HOSTARCH}"
+		export     LIBSRC="${OPTION_LIBSRC_LOCATION}"
 
-		export  OUTDIR="${OPTION_OUTDIR_LOCATION}/${PLATFORM}${SDKVER}-${HOSTARCH}"
-		export  LIBSRC="${OPTION_LIBSRC_LOCATION}"
+		export    CFGHOST="${HOSTARCH}-apple-darwin"
+		export    CFGPRFX="${OUTDIR}"
 
-		export CFGHOST="${HOSTARCH}-apple-darwin"
-		export CFGPRFX="${OUTDIR}"
-
-		export TOOLCPP=`xcrun --find --sdk ${PLATFORM}${SDKVER} cpp`
-		export  TOOLCC=`xcrun --find --sdk ${PLATFORM}${SDKVER} clang`
-		export TOOLCXX=`xcrun --find --sdk ${PLATFORM}${SDKVER} clang++`
-		export  TOOLLD=`xcrun --find --sdk ${PLATFORM}${SDKVER} ld`
+		export    TOOLCPP=`xcrun --find --sdk ${PLATFORM}${SDKVER} cpp`
+		export     TOOLCC=`xcrun --find --sdk ${PLATFORM}${SDKVER} clang`
+		export    TOOLCXX=`xcrun --find --sdk ${PLATFORM}${SDKVER} clang++`
+		export     TOOLLD=`xcrun --find --sdk ${PLATFORM}${SDKVER} ld`
+		export     TOOLAR=`xcrun --find --sdk ${PLATFORM}${SDKVER} ar`
+		export     TOOLAS=`xcrun --find --sdk ${PLATFORM}${SDKVER} as`
+		export     TOOLNM=`xcrun --find --sdk ${PLATFORM}${SDKVER} nm`
+		export  TOOLSTRIP=`xcrun --find --sdk ${PLATFORM}${SDKVER} strip`
+		export TOOLRANLIB=`xcrun --find --sdk ${PLATFORM}${SDKVER} ranlib`
 
 		# log config
 		echo -e $COL_HEADER2"BUILD FOR PLATFORM: "$COL_STYLE_R"$PLATFORM_FULL_NAME"$COL_RESET

@@ -54,7 +54,7 @@ then
 	fi
 fi
 
-./configure --prefix=${CFGPRFX} --host=${CFGHOST} --with-sysroot=${SDKROOT} --disable-shared --enable-static --without-bzip2
+./configure --prefix=${CFGPRFX} --host=${CFGHOST} --disable-shared --enable-static --without-bzip2
 make
 make install
 
