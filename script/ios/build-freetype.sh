@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 
@@ -25,10 +25,11 @@ set -e
 
 libver=$1 
 libname="freetype-${libver}"
-
 libdir="${libname}"
 libtar="${libname}.tar.gz"
+
 liburl="http://download.savannah.gnu.org/releases/freetype/${libtar}"
+
 
 if [ ! -d "${libdir}" ]
 then
@@ -53,7 +54,7 @@ then
 	fi
 fi
 
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --disable-shared --enable-static --without-bzip2
+./configure --prefix=${CFGPRFX} --host=${CFGHOST} --disable-shared --enable-static --without-bzip2
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 

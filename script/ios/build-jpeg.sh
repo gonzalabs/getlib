@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 
@@ -47,7 +47,7 @@ then
 	make clean
 fi
 
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --disable-shared --enable-static
+./configure --host=${CFGHOST} --prefix=${CFGPRFX} --disable-shared --enable-static
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 

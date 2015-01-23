@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 
@@ -29,7 +29,8 @@ libname="libpng-${libver}"
 libdir="${libname}"
 libtar="${libname}.tar.gz"
 #liburl="http://download.sourceforge.net/libpng/${libtar}"	there's a long delay before it starts
-liburl="ftp://ftp.simplesystems.org/pub/libpng/png/src/${libtar}"
+liburl="ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng16/${libtar}"
+
 
 if [ ! -d "${libdir}" ]
 then
@@ -49,7 +50,7 @@ then
 fi
 
 #--enable-arm-neon       Enable ARM NEON optimizations ????
-./configure --host=${HOSTARCH}-appale-darwin --prefix=${ROOTDIR} --disable-shared --enable-static
+./configure --prefix=${CFGPRFX} --host=${CFGHOST} --disable-shared --enable-static
 make
-make install --ignore-errors  # Ignore errors due to share libraries missing
+make install
 
