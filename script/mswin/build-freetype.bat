@@ -26,7 +26,7 @@ for /f "tokens=1,2,3 delims=." %%a in ("%libver%") do (
 set libfile=freetype%libver1%%libver2%%libver3%
 
 if "%variant%"=="debug" (
-	set libfile=%libfile%_D
+	set libfile=%libfile%d
 )
 
 :: build config
@@ -41,7 +41,7 @@ goto %command%
 :rebuild
 	:: lib
 	echo.  copy lib files:
-	copy objs\win32\%keydir%\%libfile%.lib "%outdir-lib%\freetype2.lib"
+	copy objs\%keydir%\win32\%libfile%.lib "%outdir-lib%\freetype2.lib"
 	
 	:: include
 	echo.  copy include files:
