@@ -35,20 +35,11 @@ set -e
 # SOFTWARE.
 
 
-# sdk options
-#OPTION_PLATFORMS="macosx-i386 macosx-x86_64 iphonesimulator-i386 iphoneos-armv6 iphoneos-armv7"
-OPTION_PLATFORMS="macosx-i386"
-#OPTION_PLATFORMS="iphoneos-armv7"
-OPTION_SDK_VERSION="8.1"
-OPTION_SDK_VERSION_MIN="8.1"
-
-
-# sdk versions for different platforms
-OPTION_SDKVER=(
-             "macosx:"
-           "iphoneos:8.1-8.1"
-    "iphonesimulator:8.1-8.1" )
-
+# build configuration
+OPTION_PLATFORMS=$1
+OPTION_SDKVER="${2%%-*}"
+OPTION_SDKVERMIN="${2##*:}"
+OPTION_XCOMPILE=$([ "$3" == "cross" ] && echo "1" || echo "0")
 
 # source/output files locations
 OPTION_LIBSRC_LOCATION="`pwd`/../../libs"
@@ -74,7 +65,13 @@ COL_ERR_MSG="\x1b[31;01m"
 COL_RESET="\x1b[39;49;00m"
 
 
-logcfg_general()
+print_help()
+{
+	echo "build-all usage:"
+	echo "	build-all.sh <list of target platforms> [sdkver-sdkvermin] [cross]"
+}
+
+print_base_config()
 {
 	echo -e $COL_HEADER1"COMMON CONFIG:"$COL_RESET
 	echo "     xcode developer dir: `xcode-select --print-path`"
@@ -100,7 +97,7 @@ create_output_rootdir()
 	echo -e $COL_STYLE_B"output directories created"$COL_RESET
 }
 
-default_config()
+reset_config()
 {
     # there are not separate C/C++ preprocessors
 	unset CPP
@@ -117,8 +114,19 @@ default_config()
 	export RANLIB="${TOOLRANLIB}"
 
 	# -target ${CFGHOST}
-	#SHARED_FLAGS="-arch ${HOSTARCH} -pipe -m${PLATFORM}-version-min=${SDKVERMIN} -isysroot ${SDKROOT}"
 	SHARED_FLAGS="-pipe -isysroot ${SDKROOT}"
+	
+	if [ $OPTION_XCOMPILE ] 
+	then
+		SHARED_FLAGS+=" -target ${HOSTARCH}-apple-darwin"
+	else
+		SHARED_FLAGS+=" -arch ${HOSTARCH}"
+	fi
+	
+	if [ "${SDKVERMIN}" != "" ] 
+	then
+		SHARED_FLAGS+=" -m${PLATFORM}-version-min=${SDKVERMIN}"
+	fi
 
     export CPPFLAGS="${SHARED_FLAGS} -I${OUTDIR}/include"	# c/c++ preprocessor	-I${SDKROOT}/usr/include
 	export   CFLAGS=$CPPFLAGS								# c compiler
@@ -132,7 +140,7 @@ build_library()
 	version=$2
 	builder=${SCRIPT_DIR}/build-${libname}.sh
 	
-	default_config
+	reset_config
 	
 	echo -e $COL_HEADER3"LIBRARY: "$COL_STYLE_R"${libname} v${version}"$COL_RESET" for "$COL_STYLE_R"${PLATFORM}-${HOSTARCH}"$COL_RESET
 	cd "${LIBSRC}"
@@ -155,25 +163,13 @@ build_all_platforms()
 		PLATFORM=${PLATFORM_FULL_NAME%%-*}
 		HOSTARCH=${PLATFORM_FULL_NAME##*-}
 
-		# define sdk required and minimum versions
-		SDKVERSIONS=""
-		for v in ${OPTION_SDKVER}
-		do
-			if [ "${v%%:*}" == "$PLATFORM" ]
-			then
-				SDKVERSIONS="${v##*:}"
-			fi
-		done
-
-		SDKVER=${SDKVERSIONS%%-*}
-		SDKVERMIN=${SDKVERSIONS##*-}
-
 		# configure environment
 		export   PLATFORM="${PLATFORM}"
 		export   HOSTARCH="${HOSTARCH}"
+		export   XCOMPILE=$CONFIGURE_OPTIONS
 
-		export     SDKVER="${SDKVER}"
-		export  SDKVERMIN="${SDKVERMIN}"
+		export     SDKVER="$OPTION_SDKVER"
+		export  SDKVERMIN="$OPTION_SDKVERMIN"
 
 		export    SDKROOT="`xcrun --sdk ${PLATFORM}${SDKVER} -show-sdk-path`"
 
@@ -233,12 +229,23 @@ build_all_platforms()
 
 
 ####################################################################################################
+# COMMAND LINE PARAMS VALIDATION
+####################################################################################################
+if [ "$OPTION_PLATFORMS" == "" ]
+then
+	echo "error: target platforms list is missing"
+	print_help
+	exit 0
+fi
+
+
+####################################################################################################
 # MAIN SCRIPT SEQUENCE
 ####################################################################################################
 echo -e $COL_HEADER1"GSL EXTERNAL LIBS CROSSCOMPILING SCRIPT"$COL_RESET
 
 
-logcfg_general
+print_base_config
 create_output_rootdir
 build_all_platforms
 

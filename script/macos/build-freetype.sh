@@ -53,29 +53,14 @@ then
 	fi
 fi
 
-echo "CONFIGURE..."
-./configure --prefix=${CFGPRFX} --host=${CFGHOST} --with-sysroot=${SDKROOT} --disable-shared --enable-static --without-bzip2 --without-harfbuzz --without-png --without-zlib
-echo "MAKE..."
-make
-echo "MAKE INSTALL..."
-make install
 
-if [ 0 != 0 ]
+CONFIGURE_OPTIONS="--prefix=${CFGPRFX} --with-sysroot=${SDKROOT} --disable-shared --enable-static --without-bzip2 --without-harfbuzz --without-png --without-zlib"
+
+if [ $XCOMPILE ]
 then
---host=${CFGHOST}
---host=i686-apple-darwin10
-	#building freetytpe for iphone
-	# for iPhone
-	./configure --prefix=/usr/local/iphone --host=arm-apple-darwin --enable-static=yes --enable-shared=no
-	CC=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/arm-apple-darwin9-gcc-4.0.1
-	CFLAGS="-arch armv6 -pipe -mdynamic-no-pic -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -fvisibility=hidden -miphoneos-version-min=2.0 -gdwarf-2 -mthumb -I/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.sdk/usr/include/libxml2 -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.sdk"
-	CPP=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/cpp AR=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/ar
-	LDFLAGS="-arch armv6 -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS2.0.sdk -Wl,-dead_strip -miphoneos-version-min=2.0"
-
-	# for iPhone simulator
-	./configure --prefix=/usr/local/iphone --enable-static=yes --enable-shared=no
-	CC=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/gcc-4.0
-	CFLAGS="-arch i686 -pipe -mdynamic-no-pic -std=c99 -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -fmessage-length=0 -fvisibility=hidden -mmacosx-version-min=10.5  -I/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator2.0.sdk/usr/include/ -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator2.0.sdk"
-	CPP=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/cpp AR=/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/bin/ar
-	LDFLAGS="-arch i686 -isysroot /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator2.0.sdk -Wl,-dead_strip -mmacosx-version-min=10.5"
+	CONFIGURE_OPTIONS+=" --host=${CFGHOST} --target=${HOSTARCH}-apple-darwin"
 fi
+
+./configure ${CONFIGURE_OPTIONS}
+make
+make install
