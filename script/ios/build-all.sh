@@ -36,11 +36,19 @@ set -e
 
 
 # sdk options
-#OPTION_PLATFORMS="iphonesimulator-i386 iphoneos-armv6 iphoneos-armv7"
-#OPTION_PLATFORMS="iphonesimulator-i386"
-OPTION_PLATFORMS="iphoneos-armv7"
-OPTION_SDK_VERSION="7.1"
-OPTION_IOS_VERSION_MIN="7.0"
+#OPTION_PLATFORMS="macosx-i386 macosx-x86_64 iphonesimulator-i386 iphoneos-armv6 iphoneos-armv7"
+OPTION_PLATFORMS="macosx-i386"
+#OPTION_PLATFORMS="iphoneos-armv7"
+OPTION_SDK_VERSION="8.1"
+OPTION_SDK_VERSION_MIN="8.1"
+
+
+# sdk versions for different platforms
+OPTION_SDKVER=(
+             "macosx:"
+           "iphoneos:8.1-8.1"
+    "iphonesimulator:8.1-8.1" )
+
 
 # source/output files locations
 OPTION_LIBSRC_LOCATION="`pwd`/../../libs"
@@ -51,7 +59,11 @@ OPTION_LOG_SEPARATEFILE="yes"
 OPTION_CLEAN_OUTPUT=0
 
 
+# current dir
 SCRIPT_DIR=`pwd`
+
+
+# text styles
 COL_HEADER1="\x1b[32;01m"
 COL_HEADER2="\x1b[31;01m"
 COL_HEADER3="\x1b[33;01m"
@@ -64,7 +76,7 @@ COL_RESET="\x1b[39;49;00m"
 
 logcfg_general()
 {
-	echo -e $COL_HEADER1"GENERAL CONFIG:"$COL_RESET" SDK ${OPTION_SDK_VERSION}"
+	echo -e $COL_HEADER1"COMMON CONFIG:"$COL_RESET
 	echo "     xcode developer dir: `xcode-select --print-path`"
 	echo "    libraries source dir: $OPTION_LIBSRC_LOCATION"
 	echo "    output platforms dir: $OPTION_OUTDIR_LOCATION"
@@ -90,13 +102,11 @@ create_output_rootdir()
 
 default_config()
 {
-	IOSVERMIN=${OPTION_IOS_VERSION_MIN}
-
-	# default parameters
-#	export    CPP="${TOOLCPP}"
-#	export CXXCPP="${TOOLCPP}"
+    # there are not separate C/C++ preprocessors
 	unset CPP
 	unset CXXCPP
+
+	# toolchain parts
 	export     CC="${TOOLCC}"
 	export    CXX="${TOOLCXX}"
 	export     LD="${TOOLLD}"
@@ -106,15 +116,14 @@ default_config()
 	export  STRIP="${TOOLSTRIP}"
 	export RANLIB="${TOOLRANLIB}"
 
-#-I${SDKROOT}/usr/include
-    export    CPPFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN} -I${OUTDIR}/include"
-    export CXXCPPFLAGS=$CPPFLAGS
+	# -target ${CFGHOST}
+	#SHARED_FLAGS="-arch ${HOSTARCH} -pipe -m${PLATFORM}-version-min=${SDKVERMIN} -isysroot ${SDKROOT}"
+	SHARED_FLAGS="-pipe -isysroot ${SDKROOT}"
 
-#-isysroot ${SDKROOT}
-	export      CFLAGS="${CPPFLAGS}"
-	export    CXXFLAGS=$CFLAGS
-#-L${SDKROOT}/usr/lib
-	export     LDFLAGS="-arch ${HOSTARCH} -pipe -miphoneos-version-min=${IOSVERMIN} -L${OUTDIR}/lib"
+    export CPPFLAGS="${SHARED_FLAGS} -I${OUTDIR}/include"	# c/c++ preprocessor	-I${SDKROOT}/usr/include
+	export   CFLAGS=$CPPFLAGS								# c compiler
+	export CXXFLAGS=$CFLAGS									# c++ compiler
+	export  LDFLAGS="${SHARED_FLAGS} -L${OUTDIR}/lib"		# linker				-L${SDKROOT}/usr/lib
 }
 
 build_library()
@@ -142,21 +151,31 @@ build_all_platforms()
 {
 	for PLATFORM_FULL_NAME in ${OPTION_PLATFORMS}
 	do
-		# configure
+		# exptract host platform and architecture
 		PLATFORM=${PLATFORM_FULL_NAME%%-*}
 		HOSTARCH=${PLATFORM_FULL_NAME##*-}
-		
-		export PLATFORM="${PLATFORM}"
-		export HOSTARCH="${HOSTARCH}"
-		export   SDKVER="${OPTION_SDK_VERSION}"
+
+		# define sdk required and minimum versions
+		SDKVERSIONS=""
+		for v in ${OPTION_SDKVER}
+		do
+			if [ "${v%%:*}" == "$PLATFORM" ]
+			then
+				SDKVERSIONS="${v##*:}"
+			fi
+		done
+
+		SDKVER=${SDKVERSIONS%%-*}
+		SDKVERMIN=${SDKVERSIONS##*-}
+
+		# configure environment
+		export   PLATFORM="${PLATFORM}"
+		export   HOSTARCH="${HOSTARCH}"
+
+		export     SDKVER="${SDKVER}"
+		export  SDKVERMIN="${SDKVERMIN}"
 
 		export    SDKROOT="`xcrun --sdk ${PLATFORM}${SDKVER} -show-sdk-path`"
-
-		export     OUTDIR="${OPTION_OUTDIR_LOCATION}/${PLATFORM}${SDKVER}-${HOSTARCH}"
-		export     LIBSRC="${OPTION_LIBSRC_LOCATION}"
-
-		export    CFGHOST="${HOSTARCH}-apple-darwin"
-		export    CFGPRFX="${OUTDIR}"
 
 		export    TOOLCPP=`xcrun --find --sdk ${PLATFORM}${SDKVER} cpp`
 		export     TOOLCC=`xcrun --find --sdk ${PLATFORM}${SDKVER} clang`
@@ -168,10 +187,18 @@ build_all_platforms()
 		export  TOOLSTRIP=`xcrun --find --sdk ${PLATFORM}${SDKVER} strip`
 		export TOOLRANLIB=`xcrun --find --sdk ${PLATFORM}${SDKVER} ranlib`
 
+		export     OUTDIR="${OPTION_OUTDIR_LOCATION}/${PLATFORM}${SDKVER}-${HOSTARCH}"
+		export     LIBSRC="${OPTION_LIBSRC_LOCATION}"
+
+		export    CFGHOST="${HOSTARCH}-apple-darwin"
+		export    CFGPRFX="${OUTDIR}"
+
 		# log config
 		echo -e $COL_HEADER2"BUILD FOR PLATFORM: "$COL_STYLE_R"$PLATFORM_FULL_NAME"$COL_RESET
 		echo "    base platform name: $PLATFORM"
 		echo "     host architecture: $HOSTARCH"
+		echo "     host type spcfctn: $CFGHOST"
+		echo "     platform SDK vers: $SDKVER-$SDKVERMIN"
 		echo "     platform SDK root: $SDKROOT"
 		echo "          sdk tool cpp: $TOOLCPP"
 		echo "          sdk tool  cc: $TOOLCC"
@@ -179,14 +206,14 @@ build_all_platforms()
 		echo "          sdk tool  ld: $TOOLLD"
 		echo "       output root dir: $OUTDIR"
 
-		# check dirs
+		# check sdk root
 		if [ ! -d "$SDKROOT" ]
 		then
 			echo -e $COL_ERR_MSG"ERROR: platform SDK dir does not exist: "$COL_RESET"${SDKROOT}"
 			exit
 		fi
 
-		# create dirs
+		# create out dirs
 		mkdir -p $OUTDIR
 		mkdir -p $LIBSRC
 
@@ -196,7 +223,7 @@ build_all_platforms()
 #		build_library "libpng" "1.6.10"
 #		build_library "jpeg" "9a"
 
-		build_library "freetype" "2.5.3"
+		build_library "freetype" "2.5.5"
 
 		#build_library "libogg" "1.3.0"
 		#build_library "libvorbis" "1.3.2"
