@@ -9,7 +9,7 @@
 set debug_build=yes
 
 if "%debug_build%"=="yes" (
-	call "%buildlib%" lib bullet 2.85.1 bullet3-2.85.1
+	call "%buildlib%" lib zlib 1.2.8
 ) else (
 	call "%buildlib%" lib expat 2.2.0
 	call "%buildlib%" lib freetype 2.7.0
