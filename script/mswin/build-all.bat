@@ -50,6 +50,10 @@ if /i "%toolset%" EQU "msvc-10.0" (
 	set comntools="%VS110COMNTOOLS%"
 ) else if /i "%toolset%" EQU "msvc-12.0" ( 
 	set comntools="%VS120COMNTOOLS%"
+) else if /i "%toolset%" EQU "msvc-13.0" ( 
+	set comntools="%VS130COMNTOOLS%"
+) else if /i "%toolset%" EQU "msvc-14.0" ( 
+	set comntools="%VS140COMNTOOLS%"
 ) else (
 	echo ERROR: unknown toolset value "%toolset%" is specified
 	goto :error

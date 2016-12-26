@@ -25,7 +25,7 @@ goto %command%
 	if %address-model%==32 (
 		nmake -f win32/Makefile.msc LOC="-DASMV -DASMINF" OBJA="inffas32.obj match686.obj" %target%>>"%liblog%" 2>&1
 	) else (
-		nmake -f win32/Makefile.msc AS=ml64 LOC="-DASMV -DASMINF" OBJA="inffasx64.obj gvmat64.obj inffas8664.c" %target%>>"%liblog%" 2>&1
+		nmake -f win32/Makefile.msc AS=ml64 LOC="-DASMV -DASMINF" OBJA="inffasx64.obj gvmat64.obj" %target%>>"%liblog%" 2>&1
 	)
 	
 	:: bin

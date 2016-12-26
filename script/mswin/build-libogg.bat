@@ -12,6 +12,8 @@ if "%toolset%"=="msvc-10.0" (
 	set keydir=VS2013
 )  else if "%toolset%"=="msvc-13.0" (
 	set keydir=VS2014
+)  else if "%toolset%"=="msvc-14.0" (
+	set keydir=VS2015
 )
 
 set config=%defbuildcfg%

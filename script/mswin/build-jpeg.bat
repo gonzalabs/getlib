@@ -17,7 +17,7 @@ echo.    project='%project%' config=%config%
 
 if not exist %solution% (
 	echo.  MSVC Solution doesn't exist. It will be generate...
-	nmake /f makefile.vc setup-v10
+	nmake /f makefile.vc setup-v10>>"%liblog%" 2>&1
 )
 %compiler% /t:%command% /p:Configuration=%defbuildcfg% /nologo /m /clp:ErrorsOnly /fl /flp:logfile=%liblog% %solution%
 	

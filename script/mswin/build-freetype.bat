@@ -16,12 +16,15 @@ if "%toolset%"=="msvc-10.0" (
 	set keydir=vc2013
 )  else if "%toolset%"=="msvc-13.0" (
 	set keydir=vc2014
+)  else if "%toolset%"=="msvc-14.0" (
+	set keydir=vc2015
 )
 
 :: choose lib file name
 for /f "tokens=1,2,3 delims=." %%a in ("%libver%") do (
-	set libver1=%%a&set libver2=%%b&set libver3=%%c
+	set libver1=%%a&set libver2=%%b&set libver3=
 )
+::set libver1=%%a&set libver2=%%b&set libver3=%%c	
 
 set libfile=freetype%libver1%%libver2%%libver3%
 
@@ -41,11 +44,11 @@ goto %command%
 :rebuild
 	:: lib
 	echo.  copy lib files:
-	copy objs\%keydir%\win32\%libfile%.lib "%outdir-lib%\freetype2.lib"
+	copy objs\%keydir%\%platform_str%\%libfile%.lib "%outdir-lib%\freetype2.lib"
 	
 	:: include
 	echo.  copy include files:
-	xcopy include\* "%outdir-include%\freetype\" /Q /S /Y
+	xcopy include\* "%outdir-include%\" /Q /S /Y
 	
 	goto end
 

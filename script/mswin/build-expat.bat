@@ -16,6 +16,8 @@ if "%toolset%"=="msvc-10.0" (
 	set solution=expat-vc120.sln
 )  else if "%toolset%"=="msvc-13.0" (
 	set solution=expat-vc130.sln
+)  else if "%toolset%"=="msvc-14.0" (
+	set solution=expat.sln
 )
 
 echo.    solution='%solution%'
